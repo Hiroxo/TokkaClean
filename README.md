@@ -4,7 +4,7 @@ download Xcode simulator app to your computer or
 download the EXPO app to your phone.
 
 
-`git clone`
+`git clone https://github.com/Hiroxo/TokkaClean.git`
 
 `yarn add` or `npm install`
 
