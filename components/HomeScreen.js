@@ -1,13 +1,14 @@
 import React, { Component } from 'react';
-import { Button, StyleSheet, ScrollView, ActivityIndicator, View, Text, Flatlist } from 'react-native';
+import { Alert, AsyncStorage, Button, StyleSheet, ScrollView, ActivityIndicator, View, Text, Flatlist } from 'react-native';
 import firebase from '../Firebase';
 
 class HomeScreen extends Component {
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
         this.ref = firebase.firestore().collection('user');
         this.unsubscribe = null;
         this.state = {
+            key:'',
             isLoading: true,
             users: []
         };
@@ -18,22 +19,29 @@ class HomeScreen extends Component {
             headerRight: (
             <Button
                 title="Edit Profile"
-                onPress={() => navigation.navigate('UserProfile')}
+                onPress={() => navigation.navigate('UserProfile', {
+                    boardkey: `${JSON.stringify(this.state.key)}`,
+                  })}
                 />
             ),
         };
     };
+    
     onCollectionUpdate = (querySnapshot) => {
         const users = [];
         querySnapshot.forEach((doc) => {
-            const { address, availability, name, rating } = doc.data();
+            const { address, availability, name, city, zip, rating, geopoint } = doc.data();
             users.push({
                 key: doc.id,
                 doc, // DocumentSnapshot
                 address, 
                 availability, 
-                name, 
+                name,
+                city,
+                zip,
                 rating,
+                geopoint,
+
             });
         });
         this.setState({
@@ -43,9 +51,16 @@ class HomeScreen extends Component {
     }
     componentDidMount() {
         this.unsubscribe = this.ref.onSnapshot(this.onCollectionUpdate);
-      }
-    render() {
+
         
+    }
+    logout = async () => {
+
+        await AsyncStorage.clear(); 
+        await AsyncStorage.removeItem('userToken');
+        this.props.navigation.navigate('AuthLoading');
+    }
+    render() {
         if(this.state.isLoading){
             return(
               <View style={styles.activity}>
@@ -54,31 +69,13 @@ class HomeScreen extends Component {
             )
         } else {
             return (
-                // <View style={styles.container}>
-                //     <Flatlist
-                //         data={this.state.users}
-                //         renderItem={({user})=>
-                //             <View>
-                //                 <Text>{user.name}</Text>
-                //                 <Text>{user.key}</Text>
-                //                 <Button 
-                //                     title={`${user.name}`}
-                //                     onPress={() => {
-                //                         this.props.navigation.navigate('UserDetail', {
-                //                         userkey: `${JSON.stringify(user.key)}`,
-                //                         });
-                //                     }}
-                //                 />
-                //             </View>  
-                //         }
-                //     />
-                // </View>
-
                 <ScrollView style={styles.container}>
-                <Button
-                title="Go to Registration"
-                onPress={() => this.props.navigation.navigate('Registration')}
-                />
+                    <Button
+                        title="Logout"
+                        onPress={this.logout}/>
+                    <Button
+                        title="Go to Registration"
+                        onPress={() => this.props.navigation.navigate('Registration')}/>
                     {
                         this.state.users.map((user, i) => (
                             <View key={i} style={styles.item}>

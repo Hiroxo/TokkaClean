@@ -2,6 +2,8 @@
   "expo": {
     "name": "TokkaClean",
     "description": "This project is really great.",
+    "facebookScheme": "fb1932831233504553",
+    "facebookDisplayName": "Tokka",
     "slug": "TokkaClean",
     "privacy": "public",
     "sdkVersion": "31.0.0",

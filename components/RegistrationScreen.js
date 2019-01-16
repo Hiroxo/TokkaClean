@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import { StyleSheet, ScrollView, ActivityIndicator, View, TextInput,Button, Text } from 'react-native';
 import firebase from '../Firebase';
 
-class RegistrationScreen extends Component {
+class UserProfileScreen extends Component {
   static navigationOptions = {
-    title: 'Register',
+    title: 'Edit Profile',
   };
   constructor() {
     super();
@@ -14,11 +14,16 @@ class RegistrationScreen extends Component {
       _lat:'',
       _long:'',
       rating:0,
+      geopoint:{},
+      address:'',
+      city:'',
+      zip:'',
       availability:false,
       isLoading: false,
       bio:"",
     };
   }
+ 
   updateTextInput = (text, field) => {
     const state = this.state
     state[field] = text;
@@ -30,9 +35,14 @@ class RegistrationScreen extends Component {
     });
     this.ref.add({
       name: this.state.name,
-      address: {_lat:this.state._lat, _long:this.state._long},
+      geopoint: {_lat:this.state._lat, _long:this.state._long},
       availability: this.state.availability,
       bio:this.state.bio,
+      address:this.state.address,
+      city:this.state.city,
+      zip:this.state.zip,
+      availability:this.state.availability
+      
     }).then((docRef) => {
       this.setState({
         name: '',
@@ -41,6 +51,10 @@ class RegistrationScreen extends Component {
         availability: false,
         bio:'',
         isLoading: false,
+        geopoint:{},
+        address:'',
+        zip:'',
+        city:'',
       });
       this.props.navigation.goBack();
     })
@@ -79,6 +93,27 @@ class RegistrationScreen extends Component {
         </View>
         <View style={styles.subContainer}>
           <TextInput
+              placeholder={'Street Name and Number'}
+              value={this.state.address.toString(10)}
+              onChangeText={(text) => this.updateTextInput(text, 'address')}
+          />
+        </View>
+        <View style={styles.subContainer}>
+          <TextInput
+              placeholder={'City'}
+              value={this.state.city.toString(10)}
+              onChangeText={(text) => this.updateTextInput(text, 'city')}
+          />
+        </View>
+        <View style={styles.subContainer}>
+          <TextInput
+              placeholder={'Zip Code'}
+              value={this.state.zip.toString(10)}
+              onChangeText={(text) => this.updateTextInput(text, 'zip')}
+          />
+        </View>
+        <View style={styles.subContainer}>
+          <TextInput
               placeholder={'Latitude'}
               value={this.state._lat.toString(10)}
               onChangeText={(text) => this.updateTextInput(parseInt(text), '_lat')}
@@ -103,7 +138,7 @@ class RegistrationScreen extends Component {
 }
 
 
-export default RegistrationScreen;
+export default UserProfileScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
