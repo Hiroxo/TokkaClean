@@ -1,13 +1,18 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { createStackNavigator, createAppContainer } from 'react-navigation';
 import HomeScreen from './components/HomeScreen';
 import UserDetailScreen from './components/UserDetailScreen';
 import RegistrationScreen from './components/RegistrationScreen';
 import UserProfileScreen from './components/UserProfileScreen';
 import UserRequestScreen from './components/UserRequestScreen';
+import SignInScreen from './components/SignInScreen';
+import AuthLoadingScreen from './components/AuthLoadingScreen';
+import { createSwitchNavigator, createStackNavigator, createAppContainer } from 'react-navigation';
 
-const AppNavigator = createStackNavigator(
+// Implementation of HomeScreen, OtherScreen, SignInScreen, AuthLoadingScreen
+// goes here.
+
+const AppStack = createStackNavigator(
   {
     Home: HomeScreen,
     UserDetail: UserDetailScreen,
@@ -28,8 +33,35 @@ const AppNavigator = createStackNavigator(
     },
   },
 );
+const AuthStack = createStackNavigator(
+  {
+    Login: SignInScreen,
+    Registration: RegistrationScreen,
+  },
+  {
+    initialRouteName: 'Login',
+    navigationOptions: {
+      headerStyle: {
+        backgroundColor: '#777777',
+      },
+      headerTintColor: '#fff',
+      headerTitleStyle: {
+        fontWeight: 'bold',
+      },
+    },
+  },
+);
 
-const AppContainer = createAppContainer(AppNavigator);
+const AppContainer = createAppContainer(createSwitchNavigator(
+  {
+    AuthLoading: AuthLoadingScreen,
+    App: AppStack,
+    Auth: AuthStack,
+  },
+  {
+    initialRouteName: 'AuthLoading',
+  }
+));
 
 export default class App extends React.Component {
   handleNavigationChange() {
